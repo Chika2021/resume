@@ -186,13 +186,21 @@ export default function Home() {
   const [contactStatus, setContactStatus] = useState('idle');
   const [focused, setFocused] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const cats = ['All', 'Frontend', 'Backend', 'Mobile', 'Database', 'Design', 'Systems', 'DevOps', 'Language'];
   const filteredSkills = activeSkillCat === 'All' ? SKILLS : SKILLS.filter(s => s.cat === activeSkillCat);
 
-  // Set isClient to true after mount
+  // Set isClient and check mobile
   useEffect(() => {
     setIsClient(true);
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 768);
+      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   // Typewriter effect
@@ -212,18 +220,18 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [displayed, deleting, roleIndex]);
 
-  // Parallax on mouse move - only on client side
+  // Parallax on mouse move - only on client side and desktop
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isMobile) return;
     
     const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', handleMove);
     return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
+  }, [isMobile]);
 
-  // Custom cursor effect - only on client side
+  // Custom cursor effect - only on client side and desktop
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isMobile) return;
     
     const dot = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
@@ -270,10 +278,10 @@ export default function Home() {
         el.removeEventListener('mouseleave', handleMouseLeave);
       });
     };
-  }, []);
+  }, [isMobile]);
 
   const parallax = (strength = 20) => {
-    if (!isClient) return {};
+    if (!isClient || isMobile) return {};
     return {
       transform: `translate(${(mousePos.x / window.innerWidth - 0.5) * strength}px, ${(mousePos.y / window.innerHeight - 0.5) * strength}px)`,
       transition: 'transform 0.5s ease',
@@ -324,9 +332,13 @@ export default function Home() {
 
   return (
     <main>
-      {/* Custom Cursor Elements */}
-      <div id="cursor-dot" className="cursor-dot" />
-      <div id="cursor-ring" className="cursor-ring" />
+      {/* Custom Cursor Elements - Desktop only */}
+      {!isMobile && (
+        <>
+          <div id="cursor-dot" className="cursor-dot" />
+          <div id="cursor-ring" className="cursor-ring" />
+        </>
+      )}
       
       <style jsx global>{`
         .cursor-dot {
@@ -359,6 +371,13 @@ export default function Home() {
           border-color: var(--accent, #8b5cf6);
           background: rgba(99, 102, 241, 0.1);
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .hide-mobile {
+            display: none !important;
+          }
+        }
       `}</style>
 
       {/* ═══════════════════════════════════════════════════════════
@@ -369,7 +388,7 @@ export default function Home() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          padding: '0 max(3rem, 8vw)',
+          padding: '0 max(1.5rem, 4vw)',
           minHeight: '100vh',
           position: 'relative',
           overflow: 'hidden',
@@ -383,7 +402,7 @@ export default function Home() {
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
-            className="particle"
+            className="particle hide-mobile"
             style={{
               left: `${Math.random() * 100}%`,
               animationDuration: `${6 + Math.random() * 10}s`,
@@ -394,12 +413,18 @@ export default function Home() {
         ))}
 
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+            gap: isMobile ? '2rem' : '5rem', 
+            alignItems: 'center',
+            paddingTop: isMobile ? '5rem' : '0'
+          }}>
             
             <div>
               <div
                 className="section-label reveal visible"
-                style={{ marginBottom: '1.5rem', animationDelay: '0.1s' }}
+                style={{ marginBottom: '1.5rem', animationDelay: '0.1s', justifyContent: isMobile ? 'center' : 'flex-start' }}
               >
                 Available for work · Lagos, Nigeria
               </div>
@@ -409,7 +434,7 @@ export default function Home() {
                 data-text="ANYA, CHIKA"
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
+                  fontSize: 'clamp(1.8rem, 4.5vw, 3.8rem)',
                   fontWeight: 700,
                   lineHeight: 1,
                   letterSpacing: '-0.03em',
@@ -418,6 +443,7 @@ export default function Home() {
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                   marginBottom: '0.3rem',
+                  textAlign: isMobile ? 'center' : 'left',
                 }}
               >
                 ANYA, CHIKA
@@ -425,7 +451,7 @@ export default function Home() {
               <h1
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
+                  fontSize: 'clamp(1.8rem, 4.5vw, 3.8rem)',
                   fontWeight: 700,
                   lineHeight: 1,
                   letterSpacing: '-0.03em',
@@ -434,6 +460,7 @@ export default function Home() {
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                   marginBottom: '1.5rem',
+                  textAlign: isMobile ? 'center' : 'left',
                 }}
               >
                 AMAECHI
@@ -442,13 +469,14 @@ export default function Home() {
               <div
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: 'clamp(1rem, 2vw, 1.35rem)',
+                  fontSize: 'clamp(0.9rem, 2vw, 1.35rem)',
                   color: 'var(--text-muted)',
                   marginBottom: '1.25rem',
                   minHeight: '2rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
+                  justifyContent: isMobile ? 'center' : 'flex-start',
                 }}
               >
                 <span style={{ color: 'var(--accent)' }}>&gt;_</span>
@@ -463,6 +491,9 @@ export default function Home() {
                   maxWidth: '520px',
                   marginBottom: '2.5rem',
                   fontSize: '0.97rem',
+                  textAlign: isMobile ? 'center' : 'left',
+                  marginLeft: isMobile ? 'auto' : '0',
+                  marginRight: isMobile ? 'auto' : '0',
                 }}
               >
                 Senior Full-Stack Engineer with <strong style={{ color: 'var(--text)' }}>9+ years</strong> crafting
@@ -470,7 +501,13 @@ export default function Home() {
                 to scalable cloud infrastructure.
               </p>
 
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
+              <div style={{ 
+                display: 'flex', 
+                gap: '1rem', 
+                flexWrap: 'wrap', 
+                marginBottom: '3rem',
+                justifyContent: isMobile ? 'center' : 'flex-start',
+              }}>
                 <a href="#contact" className="btn-primary magnetic">
                   <span>Let&apos;s Work Together</span>
                   <span style={{ fontSize: '1rem' }}>→</span>
@@ -480,13 +517,18 @@ export default function Home() {
                 </a>
               </div>
 
-              <div style={{ display: 'flex', gap: '2.5rem' }}>
+              <div style={{ 
+                display: 'flex', 
+                gap: '2.5rem',
+                justifyContent: isMobile ? 'center' : 'flex-start',
+                flexWrap: 'wrap',
+              }}>
                 {[
                   { n: '9+', label: 'Years Exp.' },
                   { n: '50+', label: 'Projects' },
                   { n: '5', label: 'Companies' },
                 ].map((s) => (
-                  <div key={s.label}>
+                  <div key={s.label} style={{ textAlign: 'center' }}>
                     <div className="stat-number" style={{ fontSize: '1.8rem' }}>{s.n}</div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                       {s.label}
@@ -496,54 +538,76 @@ export default function Home() {
               </div>
             </div>
 
-            <div style={parallax(12)}>
-              <div className="hero-code-block" style={{ marginBottom: '1.5rem' }}>
-                {[
-                  { num: '01', content: <><span className="code-kw">const</span> <span className="code-fn">developer</span> = {'{'}</> },
-                  { num: '02', content: <>&nbsp;&nbsp;<span className="code-sym">name</span>: <span className="code-str">&quot;Anya Chika Amaechi&quot;</span>,</> },
-                  { num: '03', content: <>&nbsp;&nbsp;<span className="code-sym">stack</span>: [<span className="code-str">&quot;Next.js&quot;</span>, <span className="code-str">&quot;NestJS&quot;</span>, <span className="code-str">&quot;Flutter&quot;</span>],</> },
-                  { num: '04', content: <>&nbsp;&nbsp;<span className="code-sym">databases</span>: [<span className="code-str">&quot;PostgreSQL&quot;</span>, <span className="code-str">&quot;MongoDB&quot;</span>],</> },
-                  { num: '05', content: <>&nbsp;&nbsp;<span className="code-sym">experience</span>: <span className="code-str">&quot;9 years&quot;</span>,</> },
-                  { num: '06', content: <>&nbsp;&nbsp;<span className="code-sym">available</span>: <span className="code-kw">true</span>,</> },
-                  { num: '07', content: <>{'}'}</> },
-                  { num: '08', content: <></> },
-                  { num: '09', content: <><span className="code-fn">developer</span>.<span className="code-fn">buildSomething</span>(<span className="code-str">&quot;amazing&quot;</span>)<span className="typewriter-cursor" /></> },
-                ].map((line) => (
-                  <div key={line.num} className="code-line">
-                    <span className="code-num">{line.num}</span>
-                    <span>{line.content}</span>
-                  </div>
-                ))}
-              </div>
+            {/* Code block - Hide on mobile */}
+            {!isMobile && (
+              <div style={parallax(12)}>
+                <div className="hero-code-block" style={{ marginBottom: '1.5rem' }}>
+                  {[
+                    { num: '01', content: <><span className="code-kw">const</span> <span className="code-fn">developer</span> = {'{'}</> },
+                    { num: '02', content: <>&nbsp;&nbsp;<span className="code-sym">name</span>: <span className="code-str">&quot;Anya Chika Amaechi&quot;</span>,</> },
+                    { num: '03', content: <>&nbsp;&nbsp;<span className="code-sym">stack</span>: [<span className="code-str">&quot;Next.js&quot;</span>, <span className="code-str">&quot;NestJS&quot;</span>, <span className="code-str">&quot;Flutter&quot;</span>],</> },
+                    { num: '04', content: <>&nbsp;&nbsp;<span className="code-sym">databases</span>: [<span className="code-str">&quot;PostgreSQL&quot;</span>, <span className="code-str">&quot;MongoDB&quot;</span>],</> },
+                    { num: '05', content: <>&nbsp;&nbsp;<span className="code-sym">experience</span>: <span className="code-str">&quot;9 years&quot;</span>,</> },
+                    { num: '06', content: <>&nbsp;&nbsp;<span className="code-sym">available</span>: <span className="code-kw">true</span>,</> },
+                    { num: '07', content: <>{'}'}</> },
+                    { num: '08', content: <></> },
+                    { num: '09', content: <><span className="code-fn">developer</span>.<span className="code-fn">buildSomething</span>(<span className="code-str">&quot;amazing&quot;</span>)<span className="typewriter-cursor" /></> },
+                  ].map((line) => (
+                    <div key={line.num} className="code-line">
+                      <span className="code-num">{line.num}</span>
+                      <span>{line.content}</span>
+                    </div>
+                  ))}
+                </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {['Next.js', 'NestJS', 'Flutter', 'Java', 'Spring Boot', 'PostgreSQL', 'MongoDB', 'MySQL', 'TypeScript', 'Docker', 'Figma'].map((tech, i) => (
-                  <span
-                    key={tech}
-                    className="tag"
-                    style={{
-                      animationDelay: `${i * 0.05}s`,
-                      animation: `fadeSlideUp 0.6s ${i * 0.05}s both`,
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {['Next.js', 'NestJS', 'Flutter', 'Java', 'Spring Boot', 'PostgreSQL', 'MongoDB', 'MySQL', 'TypeScript', 'Docker', 'Figma'].map((tech, i) => (
+                    <span
+                      key={tech}
+                      className="tag"
+                      style={{
+                        animationDelay: `${i * 0.05}s`,
+                        animation: `fadeSlideUp 0.6s ${i * 0.05}s both`,
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
 
-              <style>{`
-                @keyframes fadeSlideUp {
-                  from { opacity: 0; transform: translateY(12px); }
-                  to { opacity: 1; transform: translateY(0); }
-                }
-              `}</style>
-            </div>
+                <style>{`
+                  @keyframes fadeSlideUp {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to { opacity: 1; transform: translateY(0); }
+                  }
+                `}</style>
+              </div>
+            )}
           </div>
 
+          {/* Mobile tech tags */}
+          {isMobile && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginTop: '2rem' }}>
+              {['Next.js', 'NestJS', 'Flutter', 'Java', 'Spring Boot', 'PostgreSQL', 'MongoDB', 'MySQL', 'TypeScript', 'Docker', 'Figma'].map((tech, i) => (
+                <span
+                  key={tech}
+                  className="tag"
+                  style={{
+                    animationDelay: `${i * 0.05}s`,
+                    animation: `fadeSlideUp 0.6s ${i * 0.05}s both`,
+                  }}
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Scroll indicator */}
           <div
             style={{
               position: 'absolute',
-              bottom: '-5rem',
+              bottom: isMobile ? '1rem' : '-5rem',
               left: '50%',
               transform: 'translateX(-50%)',
               display: 'flex',
@@ -576,21 +640,26 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── ABOUT SECTION ──
           ═══════════════════════════════════════════════════════════ */}
-      <section id="about" style={{ padding: '6rem max(3rem, 8vw)', position: 'relative', overflow: 'hidden' }}>
+      <section id="about" style={{ padding: isMobile ? '4rem max(1.5rem, 4vw)' : '6rem max(3rem, 8vw)', position: 'relative', overflow: 'hidden' }}>
         <div className="grid-bg" />
         <div className="orb orb-1" style={{ opacity: 0.6 }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
-            <div className="section-label">Who I Am</div>
+            <div className="section-label" style={{ justifyContent: isMobile ? 'center' : 'flex-start' }}>Who I Am</div>
           </RevealCard>
           <RevealCard delay={0.1}>
-            <h1 className="section-title" style={{ marginBottom: '2rem' }}>
+            <h1 className="section-title" style={{ marginBottom: '2rem', textAlign: isMobile ? 'center' : 'left' }}>
               Crafting Digital<br /><span>Excellence</span>
             </h1>
           </RevealCard>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'start' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+            gap: isMobile ? '2rem' : '5rem', 
+            alignItems: 'start' 
+          }}>
             <RevealCard delay={0.2}>
               <div style={{ color: 'var(--text-muted)', lineHeight: 1.9, fontSize: '0.97rem' }}>
                 <p style={{ marginBottom: '1.2rem' }}>
@@ -609,7 +678,7 @@ export default function Home() {
                   Accra Institute of Technology, Ghana — and I blend deep technical knowledge with a consultant&apos;s
                   mindset to turn complex challenges into elegant, scalable systems.
                 </p>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
                   <a
                     href="mailto:amaechichika9@gmail.com"
                     className="btn-primary"
@@ -654,7 +723,7 @@ export default function Home() {
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
                         {item.label}
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>{item.value}</div>
+                      <div style={{ fontSize: isMobile ? '0.75rem' : '0.85rem', color: 'var(--text)', wordBreak: 'break-all' }}>{item.value}</div>
                     </div>
                   </div>
                 ))}
@@ -667,17 +736,17 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── SKILLS SECTION ──
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: isMobile ? '3rem max(1.5rem, 4vw)' : '5rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
-            <div className="section-label">Expertise</div>
-            <h2 className="section-title" style={{ marginBottom: '2.5rem' }}>
+            <div className="section-label" style={{ justifyContent: isMobile ? 'center' : 'flex-start' }}>Expertise</div>
+            <h2 className="section-title" style={{ marginBottom: '2.5rem', textAlign: isMobile ? 'center' : 'left' }}>
               Technical <span>Skills</span>
             </h2>
           </RevealCard>
 
           <RevealCard delay={0.1} style={{ marginBottom: '2.5rem' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
               {cats.map(cat => (
                 <button
                   key={cat}
@@ -702,7 +771,7 @@ export default function Home() {
             </div>
           </RevealCard>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 4rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '0' : '0 4rem' }}>
             {filteredSkills.map((s) => (
               <div key={s.name + activeSkillCat}>
                 <SkillBar {...s} />
@@ -715,27 +784,27 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── EXPERIENCE TIMELINE ──
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '6rem max(3rem, 8vw)', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: isMobile ? '3rem max(1.5rem, 4vw)' : '6rem max(3rem, 8vw)', position: 'relative', overflow: 'hidden' }}>
         <div className="grid-bg" />
         <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
-            <div className="section-label">Career Path</div>
-            <h2 className="section-title" style={{ marginBottom: '4rem' }}>
+            <div className="section-label" style={{ justifyContent: isMobile ? 'center' : 'flex-start' }}>Career Path</div>
+            <h2 className="section-title" style={{ marginBottom: '4rem', textAlign: isMobile ? 'center' : 'left' }}>
               Work <span>Experience</span>
             </h2>
           </RevealCard>
 
-          <div style={{ position: 'relative', paddingLeft: '2.5rem' }}>
+          <div style={{ position: 'relative', paddingLeft: isMobile ? '1.5rem' : '2.5rem' }}>
             <div className="timeline-line" />
 
             {EXPERIENCE.map((exp, i) => (
               <RevealCard key={exp.company} delay={i * 0.12} style={{ marginBottom: '3rem' }}>
                 <div style={{ position: 'relative' }}>
                   <div className="timeline-dot" style={{ borderColor: exp.color, boxShadow: `0 0 12px ${exp.color}55` }} />
-                  <div className="glass-card" style={{ padding: '1.75rem 2rem', borderLeft: `3px solid ${exp.color}` }}>
+                  <div className="glass-card" style={{ padding: isMobile ? '1.25rem 1.25rem' : '1.75rem 2rem', borderLeft: `3px solid ${exp.color}` }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
                       <div>
-                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? '1rem' : '1.15rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>
                           {exp.role}
                         </h3>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: exp.color }}>
@@ -786,16 +855,16 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── ACHIEVEMENTS ──
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '5rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative' }}>
+      <section style={{ padding: isMobile ? '3rem max(1.5rem, 4vw)' : '5rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
-            <div className="section-label">Impact</div>
-            <h2 className="section-title" style={{ marginBottom: '3rem' }}>
+            <div className="section-label" style={{ justifyContent: isMobile ? 'center' : 'flex-start' }}>Impact</div>
+            <h2 className="section-title" style={{ marginBottom: '3rem', textAlign: isMobile ? 'center' : 'left' }}>
               Key <span>Achievements</span>
             </h2>
           </RevealCard>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {ACHIEVEMENTS.map((a, i) => (
               <RevealCard key={a.title} delay={i * 0.08}>
                 <div
@@ -817,7 +886,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── CONTACT SECTION ──
           ═══════════════════════════════════════════════════════════ */}
-      <section id="contact" style={{ padding: '6rem max(3rem, 8vw) 3rem', position: 'relative', overflow: 'hidden' }}>
+      <section id="contact" style={{ padding: isMobile ? '3rem max(1.5rem, 4vw) 2rem' : '6rem max(3rem, 8vw) 3rem', position: 'relative', overflow: 'hidden' }}>
         <div className="grid-bg" />
         <div className="orb orb-2" style={{ opacity: 0.5 }} />
 
@@ -833,7 +902,7 @@ export default function Home() {
             </h1>
           </RevealCard>
           <RevealCard delay={0.2}>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto 3rem', lineHeight: 1.8 }}>
+            <p style={{ color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto 3rem', lineHeight: 1.8, padding: isMobile ? '0 1rem' : '0' }}>
               Whether you have a project in mind, a job opportunity, or just want to say hello —
               I&apos;d love to hear from you. My inbox is always open.
             </p>
@@ -841,12 +910,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ padding: '2rem max(3rem, 8vw) 6rem', position: 'relative' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '4rem', alignItems: 'start' }}>
+      <section style={{ padding: isMobile ? '1rem max(1.5rem, 4vw) 4rem' : '2rem max(3rem, 8vw) 6rem', position: 'relative' }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto', 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1.6fr', 
+          gap: isMobile ? '2rem' : '4rem', 
+          alignItems: 'start' 
+        }}>
 
           <div>
             <RevealCard>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1rem' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? '1.3rem' : '1.5rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1rem' }}>
                 Get in Touch
               </h2>
               <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '0.9rem', marginBottom: '2rem' }}>
@@ -877,7 +953,7 @@ export default function Home() {
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'var(--text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.15rem' }}>
                       {item.label}
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text)', wordBreak: 'break-all' }}>{item.value}</div>
+                    <div style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', color: 'var(--text)', wordBreak: 'break-all' }}>{item.value}</div>
                   </div>
                   <span style={{ marginLeft: 'auto', color: item.color, fontSize: '0.8rem' }}>→</span>
                 </a>
@@ -907,7 +983,7 @@ export default function Home() {
             <div
               className="glass-card"
               style={{
-                padding: '2.5rem',
+                padding: isMobile ? '1.5rem' : '2.5rem',
                 position: 'relative',
                 overflow: 'hidden',
               }}
@@ -917,7 +993,7 @@ export default function Home() {
                 background: 'linear-gradient(90deg, var(--primary), var(--accent), var(--gold))',
               }} />
 
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? '1.2rem' : '1.35rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>
                 Send a Message
               </h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '2rem' }}>
@@ -925,7 +1001,7 @@ export default function Home() {
               </p>
 
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="name">Your Name</label>
                     <input
@@ -1056,17 +1132,17 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           ── FOOTER CTA ──
           ═══════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '4rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+      <section style={{ padding: isMobile ? '3rem max(1.5rem, 4vw)' : '4rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div className="orb orb-3" style={{ opacity: 0.4 }} />
         <div style={{ maxWidth: '600px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1rem' }}>
               Open to opportunities
             </p>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)', marginBottom: '1.5rem' }}>
               Ready to build something <span style={{ background: 'linear-gradient(135deg,var(--primary),var(--accent))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>extraordinary?</span>
             </h2>
-            <a href="mailto:amaechichika9@gmail.com" className="btn-primary magnetic" style={{ display: 'inline-flex' }}>
+            <a href="mailto:amaechichika9@gmail.com" className="btn-primary magnetic" style={{ display: 'inline-flex', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
               amaechichika9@gmail.com ✉️
             </a>
           </RevealCard>
