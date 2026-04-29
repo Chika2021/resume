@@ -185,9 +185,15 @@ export default function Home() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [contactStatus, setContactStatus] = useState('idle');
   const [focused, setFocused] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   const cats = ['All', 'Frontend', 'Backend', 'Mobile', 'Database', 'Design', 'Systems', 'DevOps', 'Language'];
   const filteredSkills = activeSkillCat === 'All' ? SKILLS : SKILLS.filter(s => s.cat === activeSkillCat);
+
+  // Set isClient to true after mount
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Typewriter effect
   useEffect(() => {
@@ -206,15 +212,19 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [displayed, deleting, roleIndex]);
 
-  // Parallax on mouse move
+  // Parallax on mouse move - only on client side
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', handleMove);
     return () => window.removeEventListener('mousemove', handleMove);
   }, []);
 
-  // Custom cursor effect
+  // Custom cursor effect - only on client side
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const dot = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     
@@ -229,7 +239,6 @@ export default function Home() {
       mouseX = e.clientX;
       mouseY = e.clientY;
       
-      // Move dot immediately
       dot.style.left = mouseX + 'px';
       dot.style.top = mouseY + 'px';
     };
@@ -248,7 +257,6 @@ export default function Home() {
     document.addEventListener('mousemove', handleMouseMove);
     animateRing();
 
-    // Add hover effect to interactive elements
     const interactiveElements = document.querySelectorAll('a, button, input, textarea, [class*="card"], [class*="btn"], .tag');
     interactiveElements.forEach(el => {
       el.addEventListener('mouseenter', handleMouseEnter);
@@ -264,10 +272,13 @@ export default function Home() {
     };
   }, []);
 
-  const parallax = (strength = 20) => ({
-    transform: `translate(${(mousePos.x / window.innerWidth - 0.5) * strength}px, ${(mousePos.y / window.innerHeight - 0.5) * strength}px)`,
-    transition: 'transform 0.5s ease',
-  });
+  const parallax = (strength = 20) => {
+    if (!isClient) return {};
+    return {
+      transform: `translate(${(mousePos.x / window.innerWidth - 0.5) * strength}px, ${(mousePos.y / window.innerHeight - 0.5) * strength}px)`,
+      transition: 'transform 0.5s ease',
+    };
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -276,7 +287,6 @@ export default function Home() {
     setContactStatus('loading');
 
     try {
-      // Using EmailJS with YOUR template variables (name, email, title, message)
       const templateParams = {
         name: form.name,
         email: form.email,
@@ -365,15 +375,11 @@ export default function Home() {
           overflow: 'hidden',
         }}
       >
-        {/* Grid bg */}
         <div className="grid-bg" />
-
-        {/* Orbs */}
         <div className="orb orb-1" />
         <div className="orb orb-2" />
         <div className="orb orb-3" />
 
-        {/* Particles */}
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
@@ -387,17 +393,15 @@ export default function Home() {
           />
         ))}
 
-        {/* Content */}
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
             
-            {/* Left col */}
             <div>
               <div
                 className="section-label reveal visible"
                 style={{ marginBottom: '1.5rem', animationDelay: '0.1s' }}
               >
-                Available for work · Abuja, Nigeria
+                Available for work · Lagos, Nigeria
               </div>
 
               <h1
@@ -476,7 +480,6 @@ export default function Home() {
                 </a>
               </div>
 
-              {/* Stats row */}
               <div style={{ display: 'flex', gap: '2.5rem' }}>
                 {[
                   { n: '9+', label: 'Years Exp.' },
@@ -493,7 +496,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right col – code block */}
             <div style={parallax(12)}>
               <div className="hero-code-block" style={{ marginBottom: '1.5rem' }}>
                 {[
@@ -514,7 +516,6 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Floating tech tags */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {['Next.js', 'NestJS', 'Flutter', 'Java', 'Spring Boot', 'PostgreSQL', 'MongoDB', 'MySQL', 'TypeScript', 'Docker', 'Figma'].map((tech, i) => (
                   <span
@@ -539,7 +540,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Scroll indicator */}
           <div
             style={{
               position: 'absolute',
@@ -629,7 +629,6 @@ export default function Home() {
               </div>
             </RevealCard>
 
-            {/* Info cards */}
             <RevealCard delay={0.35}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {[
@@ -677,7 +676,6 @@ export default function Home() {
             </h2>
           </RevealCard>
 
-          {/* Category filter */}
           <RevealCard delay={0.1} style={{ marginBottom: '2.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {cats.map(cat => (
@@ -846,7 +844,6 @@ export default function Home() {
       <section style={{ padding: '2rem max(3rem, 8vw) 6rem', position: 'relative' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '4rem', alignItems: 'start' }}>
 
-          {/* Left: info */}
           <div>
             <RevealCard>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1rem' }}>
@@ -887,7 +884,6 @@ export default function Home() {
               </RevealCard>
             ))}
 
-            {/* Availability badge */}
             <RevealCard delay={0.5}>
               <div
                 className="glass-card"
@@ -907,7 +903,6 @@ export default function Home() {
             </RevealCard>
           </div>
 
-          {/* Right: form */}
           <RevealCard delay={0.15}>
             <div
               className="glass-card"
@@ -917,7 +912,6 @@ export default function Home() {
                 overflow: 'hidden',
               }}
             >
-              {/* Top gradient bar */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
                 background: 'linear-gradient(90deg, var(--primary), var(--accent), var(--gold))',
