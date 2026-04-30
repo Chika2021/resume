@@ -2,10 +2,7 @@
 import type { Metadata } from 'next';
 import { useState, useRef, useEffect } from 'react';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Get in touch with Anya Chika Amaechi for full-stack development, mobile apps, or IT consulting projects.',
-};
+
 
 function RevealCard({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const ref = useRef(null);

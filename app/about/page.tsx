@@ -2,10 +2,7 @@
 import type { Metadata } from 'next';
 import { useEffect, useRef, useState } from 'react';
 
-export const metadata: Metadata = {
-  title: 'About',  // renders as "About | Anya Chika Amaechi"
-  description: 'Learn about my 9 years of experience in full-stack development, IT consulting, and mobile development.',
-};
+
 
 const SKILLS = [
   { name: 'Next.js / React', pct: 95, cat: 'Frontend' },
