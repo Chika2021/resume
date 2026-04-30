@@ -38,9 +38,8 @@ export const metadata: Metadata = {
     canonical: 'https://chikaanya.vercel.app',
   },
 
-  // Add this 👇
   verification: {
-    google: 'gDgM9MNmFLs1sJWQBxJW_pBtvI2Qpl2oO6vCk5E1Qm0',
+    google: 'Gef9mhvDTzt4snqgkeZFIVgxMZFLq-x1oCOiOJ9iFck',
   },
 };
 
