@@ -59,6 +59,17 @@ export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [focused, setFocused] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => setIsMobile(window.innerWidth < 768);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
 
   const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -103,8 +114,10 @@ export default function Contact() {
     }
   };
 
-  // Custom cursor effect
+  // Custom cursor effect - only on desktop
   useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 768) return;
+    
     const dot = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     
@@ -119,7 +132,6 @@ export default function Contact() {
       mouseX = e.clientX;
       mouseY = e.clientY;
       
-      // Move dot immediately
       dot.style.left = mouseX + 'px';
       dot.style.top = mouseY + 'px';
     };
@@ -138,7 +150,6 @@ export default function Contact() {
     document.addEventListener('mousemove', handleMouseMove);
     animateRing();
 
-    // Add hover effect to interactive elements
     const interactiveElements = document.querySelectorAll('a, button, input, textarea, [class*="card"], [class*="btn"], .tag');
     interactiveElements.forEach(el => {
       el.addEventListener('mouseenter', handleMouseEnter);
@@ -155,31 +166,35 @@ export default function Contact() {
   }, []);
 
   return (
-    <main style={{ paddingTop: '5rem' }}>
+    <main style={{ paddingTop: isMobile ? '4rem' : '5rem' }}>
 
-      {/* Custom Cursor Elements */}
-      <div id="cursor-dot" style={{
-        position: 'fixed',
-        width: '8px',
-        height: '8px',
-        background: 'var(--primary, #6366f1)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        zIndex: 9999,
-        transform: 'translate(-50%, -50%)',
-        transition: 'width 0.2s, height 0.2s',
-      }} />
-      <div id="cursor-ring" style={{
-        position: 'fixed',
-        width: '40px',
-        height: '40px',
-        border: '2px solid var(--primary, #6366f1)',
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        zIndex: 9998,
-        transform: 'translate(-50%, -50%)',
-        transition: 'width 0.3s, height 0.3s, border-color 0.3s',
-      }} />
+      {/* Custom Cursor Elements - Desktop only */}
+      {!isMobile && (
+        <>
+          <div id="cursor-dot" style={{
+            position: 'fixed',
+            width: '8px',
+            height: '8px',
+            background: 'var(--primary, #6366f1)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: 9999,
+            transform: 'translate(-50%, -50%)',
+            transition: 'width 0.2s, height 0.2s',
+          }} />
+          <div id="cursor-ring" style={{
+            position: 'fixed',
+            width: '40px',
+            height: '40px',
+            border: '2px solid var(--primary, #6366f1)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: 9998,
+            transform: 'translate(-50%, -50%)',
+            transition: 'width 0.3s, height 0.3s, border-color 0.3s',
+          }} />
+        </>
+      )}
       
       <style jsx global>{`
         #cursor-ring.hovering {
@@ -191,7 +206,11 @@ export default function Contact() {
       `}</style>
 
       {/* ── HERO ── */}
-      <section style={{ padding: '6rem max(3rem, 8vw) 3rem', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ 
+        padding: isMobile ? '3rem max(1.5rem, 4vw) 2rem' : '6rem max(3rem, 8vw) 3rem', 
+        position: 'relative', 
+        overflow: 'hidden' 
+      }}>
         <div className="grid-bg" />
         <div className="orb orb-2" style={{ opacity: 0.5 }} />
 
@@ -202,12 +221,19 @@ export default function Contact() {
             </div>
           </RevealCard>
           <RevealCard delay={0.1}>
-            <h1 className="section-title" style={{ marginBottom: '1.25rem' }}>
+            <h1 className="section-title" style={{ marginBottom: '1.25rem', fontSize: isMobile ? 'clamp(2rem, 8vw, 2.5rem)' : undefined }}>
               Start a <span>Conversation</span>
             </h1>
           </RevealCard>
           <RevealCard delay={0.2}>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '540px', margin: '0 auto 3rem', lineHeight: 1.8 }}>
+            <p style={{ 
+              color: 'var(--text-muted)', 
+              maxWidth: '540px', 
+              margin: '0 auto 3rem', 
+              lineHeight: 1.8,
+              padding: isMobile ? '0 0.5rem' : '0',
+              fontSize: isMobile ? '0.9rem' : '1rem'
+            }}>
               Whether you have a project in mind, a job opportunity, or just want to say hello —
               I'd love to hear from you. My inbox is always open.
             </p>
@@ -216,16 +242,39 @@ export default function Contact() {
       </section>
 
       {/* ── CONTACT GRID ── */}
-      <section style={{ padding: '2rem max(3rem, 8vw) 6rem', position: 'relative' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '4rem', alignItems: 'start' }}>
+      <section style={{ 
+        padding: isMobile ? '1rem max(1.5rem, 4vw) 4rem' : '2rem max(3rem, 8vw) 6rem', 
+        position: 'relative' 
+      }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto', 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1.6fr', 
+          gap: isMobile ? '2rem' : '4rem', 
+          alignItems: 'start' 
+        }}>
 
           {/* Left: info */}
           <div>
             <RevealCard>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1rem' }}>
+              <h2 style={{ 
+                fontFamily: 'var(--font-display)', 
+                fontSize: isMobile ? '1.3rem' : '1.5rem', 
+                fontWeight: 600, 
+                color: 'var(--text)', 
+                marginBottom: '1rem',
+                textAlign: isMobile ? 'center' : 'left'
+              }}>
                 Get in Touch
               </h2>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '0.9rem', marginBottom: '2rem' }}>
+              <p style={{ 
+                color: 'var(--text-muted)', 
+                lineHeight: 1.8, 
+                fontSize: '0.9rem', 
+                marginBottom: '2rem',
+                textAlign: isMobile ? 'center' : 'left'
+              }}>
                 I'm currently open to new opportunities — full-time positions, consulting engagements,
                 and freelance collaborations. Response time is typically within 24 hours.
               </p>
@@ -242,20 +291,35 @@ export default function Contact() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1rem',
-                    padding: '1.1rem 1.25rem',
+                    padding: isMobile ? '0.9rem 1rem' : '1.1rem 1.25rem',
                     marginBottom: '0.85rem',
                     textDecoration: 'none',
                     borderLeft: `3px solid ${item.color}`,
                   }}
                 >
-                  <span style={{ fontSize: '1.3rem', minWidth: '1.5rem' }}>{item.icon}</span>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'var(--text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '0.15rem' }}>
+                  <span style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', minWidth: '1.5rem' }}>{item.icon}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ 
+                      fontFamily: 'var(--font-mono)', 
+                      fontSize: '0.58rem', 
+                      color: 'var(--text-dim)', 
+                      letterSpacing: '0.15em', 
+                      textTransform: 'uppercase', 
+                      marginBottom: '0.15rem' 
+                    }}>
                       {item.label}
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text)', wordBreak: 'break-all' }}>{item.value}</div>
+                    <div style={{ 
+                      fontSize: isMobile ? '0.72rem' : '0.82rem', 
+                      color: 'var(--text)', 
+                      wordBreak: 'break-all',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {item.value}
+                    </div>
                   </div>
-                  <span style={{ marginLeft: 'auto', color: item.color, fontSize: '0.8rem' }}>→</span>
+                  <span style={{ marginLeft: 'auto', color: item.color, fontSize: '0.8rem', flexShrink: 0 }}>→</span>
                 </a>
               </RevealCard>
             ))}
@@ -264,15 +328,39 @@ export default function Contact() {
             <RevealCard delay={0.5}>
               <div
                 className="glass-card"
-                style={{ padding: '1.25rem', marginTop: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}
+                style={{ 
+                  padding: isMobile ? '1rem' : '1.25rem', 
+                  marginTop: '1.5rem', 
+                  display: 'flex', 
+                  gap: '0.75rem', 
+                  alignItems: 'center' 
+                }}
               >
-                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 12px #22c55e', animation: 'pulse-green 2s ease infinite' }} />
+                <span style={{ 
+                  width: '10px', 
+                  height: '10px', 
+                  borderRadius: '50%', 
+                  background: '#22c55e', 
+                  flexShrink: 0, 
+                  boxShadow: '0 0 12px #22c55e', 
+                  animation: 'pulse-green 2s ease infinite' 
+                }} />
                 <style>{`@keyframes pulse-green { 0%,100% { box-shadow: 0 0 6px #22c55e; } 50% { box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e44; } }`}</style>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: '#22c55e', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ 
+                    fontFamily: 'var(--font-mono)', 
+                    fontSize: isMobile ? '0.62rem' : '0.68rem', 
+                    color: '#22c55e', 
+                    letterSpacing: '0.1em', 
+                    textTransform: 'uppercase' 
+                  }}>
                     Available for Work
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  <div style={{ 
+                    fontSize: isMobile ? '0.72rem' : '0.8rem', 
+                    color: 'var(--text-muted)', 
+                    marginTop: '0.15rem' 
+                  }}>
                     Open to full-time, consulting & freelance
                   </div>
                 </div>
@@ -285,7 +373,7 @@ export default function Contact() {
             <div
               className="glass-card"
               style={{
-                padding: '2.5rem',
+                padding: isMobile ? '1.25rem' : '2.5rem',
                 position: 'relative',
                 overflow: 'hidden',
               }}
@@ -296,15 +384,29 @@ export default function Contact() {
                 background: 'linear-gradient(90deg, var(--primary), var(--accent), var(--gold))',
               }} />
 
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>
+              <h3 style={{ 
+                fontFamily: 'var(--font-display)', 
+                fontSize: isMobile ? '1.15rem' : '1.35rem', 
+                fontWeight: 600, 
+                color: 'var(--text)', 
+                marginBottom: '0.5rem' 
+              }}>
                 Send a Message
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '2rem' }}>
+              <p style={{ 
+                color: 'var(--text-muted)', 
+                fontSize: isMobile ? '0.75rem' : '0.82rem', 
+                marginBottom: isMobile ? '1.5rem' : '2rem' 
+              }}>
                 All messages go directly to amaechichika9@gmail.com
               </p>
 
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+                  gap: '1rem' 
+                }}>
                   <div className="form-group">
                     <label htmlFor="name">Your Name</label>
                     <input
@@ -317,6 +419,7 @@ export default function Contact() {
                       onFocus={() => setFocused('name')}
                       onBlur={() => setFocused(null)}
                       required
+                      style={isMobile ? { fontSize: '0.9rem', padding: '0.8rem 1rem' } : {}}
                     />
                   </div>
                   <div className="form-group">
@@ -331,6 +434,7 @@ export default function Contact() {
                       onFocus={() => setFocused('email')}
                       onBlur={() => setFocused(null)}
                       required
+                      style={isMobile ? { fontSize: '0.9rem', padding: '0.8rem 1rem' } : {}}
                     />
                   </div>
                 </div>
@@ -347,6 +451,7 @@ export default function Contact() {
                     onFocus={() => setFocused('subject')}
                     onBlur={() => setFocused(null)}
                     required
+                    style={isMobile ? { fontSize: '0.9rem', padding: '0.8rem 1rem' } : {}}
                   />
                 </div>
 
@@ -361,7 +466,8 @@ export default function Contact() {
                     onFocus={() => setFocused('message')}
                     onBlur={() => setFocused(null)}
                     required
-                    rows={6}
+                    rows={isMobile ? 5 : 6}
+                    style={isMobile ? { fontSize: '0.9rem', padding: '0.8rem 1rem' } : {}}
                   />
                 </div>
 
@@ -372,8 +478,8 @@ export default function Contact() {
                   style={{
                     width: '100%',
                     justifyContent: 'center',
-                    fontSize: '0.82rem',
-                    padding: '1rem',
+                    fontSize: isMobile ? '0.78rem' : '0.82rem',
+                    padding: isMobile ? '0.85rem' : '1rem',
                     opacity: status === 'loading' ? 0.7 : 1,
                     transition: 'all 0.3s',
                   }}
@@ -396,13 +502,13 @@ export default function Contact() {
                 {status === 'success' && (
                   <div style={{
                     marginTop: '1rem',
-                    padding: '1rem',
+                    padding: isMobile ? '0.75rem' : '1rem',
                     background: 'rgba(34,197,94,0.08)',
                     border: '1px solid rgba(34,197,94,0.25)',
                     borderRadius: '6px',
                     color: '#22c55e',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.78rem',
+                    fontSize: isMobile ? '0.7rem' : '0.78rem',
                     textAlign: 'center',
                     animation: 'fadeIn 0.4s ease',
                   }}>
@@ -412,13 +518,13 @@ export default function Contact() {
                 {status === 'error' && (
                   <div style={{
                     marginTop: '1rem',
-                    padding: '1rem',
+                    padding: isMobile ? '0.75rem' : '1rem',
                     background: 'rgba(239,68,68,0.08)',
                     border: '1px solid rgba(239,68,68,0.25)',
                     borderRadius: '6px',
                     color: '#ef4444',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.78rem',
+                    fontSize: isMobile ? '0.7rem' : '0.78rem',
                     textAlign: 'center',
                   }}>
                     Something went wrong. Please email me directly at amaechichika9@gmail.com
@@ -433,17 +539,51 @@ export default function Contact() {
       </section>
 
       {/* ── FOOTER CTA ── */}
-      <section style={{ padding: '4rem max(3rem, 8vw)', background: 'var(--surface)', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+      <section style={{ 
+        padding: isMobile ? '2.5rem max(1.5rem, 4vw)' : '4rem max(3rem, 8vw)', 
+        background: 'var(--surface)', 
+        position: 'relative', 
+        overflow: 'hidden', 
+        textAlign: 'center' 
+      }}>
         <div className="orb orb-3" style={{ opacity: 0.4 }} />
         <div style={{ maxWidth: '600px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <RevealCard>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1rem' }}>
+            <p style={{ 
+              fontFamily: 'var(--font-mono)', 
+              fontSize: isMobile ? '0.65rem' : '0.72rem', 
+              color: 'var(--accent)', 
+              letterSpacing: '0.2em', 
+              textTransform: 'uppercase', 
+              marginBottom: '1rem' 
+            }}>
               Open to opportunities
             </p>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)', marginBottom: '1.5rem' }}>
-              Ready to build something <span style={{ background: 'linear-gradient(135deg,var(--primary),var(--accent))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>extraordinary?</span>
+            <h2 style={{ 
+              fontFamily: 'var(--font-display)', 
+              fontSize: isMobile ? 'clamp(1.5rem, 6vw, 2rem)' : 'clamp(2rem, 4vw, 3rem)', 
+              fontWeight: 700, 
+              letterSpacing: '-0.02em', 
+              color: 'var(--text)', 
+              marginBottom: '1.5rem' 
+            }}>
+              Ready to build something <span style={{ 
+                background: 'linear-gradient(135deg,var(--primary),var(--accent))', 
+                WebkitBackgroundClip:'text', 
+                WebkitTextFillColor:'transparent', 
+                backgroundClip:'text' 
+              }}>extraordinary?</span>
             </h2>
-            <a href="mailto:amaechichika9@gmail.com" className="btn-primary magnetic" style={{ display: 'inline-flex' }}>
+            <a 
+              href="mailto:amaechichika9@gmail.com" 
+              className="btn-primary magnetic" 
+              style={{ 
+                display: 'inline-flex',
+                fontSize: isMobile ? '0.75rem' : '0.9rem',
+                padding: isMobile ? '0.75rem 1.5rem' : '0.9rem 2rem',
+                wordBreak: 'break-all'
+              }}
+            >
               amaechichika9@gmail.com ✉️
             </a>
           </RevealCard>

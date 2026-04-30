@@ -426,7 +426,7 @@ export default function Home() {
                 className="section-label reveal visible"
                 style={{ marginBottom: '1.5rem', animationDelay: '0.1s', justifyContent: isMobile ? 'center' : 'flex-start' }}
               >
-                Available for work · Lagos, Nigeria
+                Available for work · Abuja, Nigeria
               </div>
 
               <h1
@@ -674,7 +674,7 @@ export default function Home() {
                   cross-platform mobile apps with <strong style={{ color: 'var(--gold)' }}>Flutter</strong>.
                 </p>
                 <p style={{ marginBottom: '2rem' }}>
-                  I hold a <strong style={{ color: 'var(--text)' }}>B.Sc. in Information Technology & Network Systems</strong> from
+                  I hold a <strong style={{ color: 'var(--text)' }}>B.Sc. in Information Technology & Network Systems </strong> from
                   Accra Institute of Technology, Ghana — and I blend deep technical knowledge with a consultant&apos;s
                   mindset to turn complex challenges into elegant, scalable systems.
                 </p>
