@@ -1,5 +1,11 @@
 'use client';
+import { Metadata } from 'next';
 import { useEffect, useRef, useState } from 'react';
+
+export const metadata: Metadata = {
+  title: 'About',  // renders as "About | Anya Chika Amaechi"
+  description: 'Learn about my 9 years of experience in full-stack development, IT consulting, and mobile development.',
+};
 
 const SKILLS = [
   { name: 'Next.js / React', pct: 95, cat: 'Frontend' },
@@ -83,7 +89,7 @@ const ACHIEVEMENTS = [
   { icon: '⚡', title: 'Cross-functional Leadership', desc: 'Led teams to deliver complex software projects on schedule and under budget' },
 ];
 
-function SkillBar({ name, pct, cat }) {
+function SkillBar({ name, pct, cat }: { name: string; pct: number; cat: string }) {
   const ref = useRef(null);
   const [animate, setAnimate] = useState(false);
 
@@ -112,7 +118,7 @@ function SkillBar({ name, pct, cat }) {
   );
 }
 
-function RevealCard({ children, delay = 0, style = {} }) {
+function RevealCard({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const ref = useRef(null);
   const [vis, setVis] = useState(false);
   useEffect(() => {
@@ -141,7 +147,6 @@ export default function About() {
   const cats = ['All', 'Frontend', 'Backend', 'Mobile', 'Database', 'Design', 'Systems', 'DevOps', 'Language'];
   const filteredSkills = activeSkillCat === 'All' ? SKILLS : SKILLS.filter(s => s.cat === activeSkillCat);
 
-  // Check if mobile
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -154,7 +159,6 @@ export default function About() {
   return (
     <main style={{ paddingTop: isMobile ? '4rem' : '5rem' }}>
 
-      {/* ── ABOUT HERO ── */}
       <section style={{ 
         padding: isMobile ? '3rem max(1.5rem, 4vw)' : '6rem max(3rem, 8vw)', 
         position: 'relative', 
@@ -193,7 +197,7 @@ export default function About() {
                 textAlign: isMobile ? 'center' : 'left'
               }}>
                 <p style={{ marginBottom: '1.2rem' }}>
-                  I'm a <strong style={{ color: 'var(--text)' }}>Senior Full-Stack Software Engineer</strong> and
+                  I&apos;m a <strong style={{ color: 'var(--text)' }}>Senior Full-Stack Software Engineer</strong> and
                   IT Consultant with over 9 years of professional experience designing and delivering robust
                   digital solutions for diverse industries across Nigeria and beyond.
                 </p>
@@ -205,7 +209,7 @@ export default function About() {
                 </p>
                 <p style={{ marginBottom: '2rem' }}>
                   I hold a <strong style={{ color: 'var(--text)' }}>B.Sc. in Information Technology & Network Systems</strong> from
-                  Accra Institute of Technology, Ghana — and I blend deep technical knowledge with a consultant's
+                  Accra Institute of Technology, Ghana — and I blend deep technical knowledge with a consultant&apos;s
                   mindset to turn complex challenges into elegant, scalable systems.
                 </p>
                 <div style={{ 
@@ -233,7 +237,6 @@ export default function About() {
               </div>
             </RevealCard>
 
-            {/* Info cards */}
             <RevealCard delay={0.35}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {[
@@ -243,7 +246,7 @@ export default function About() {
                   { label: 'Education', value: 'B.Sc. IT & Network Systems, AIT Ghana', icon: '🎓' },
                   { label: 'GitHub', value: 'github.com/Chika2021', icon: '🐙' },
                   { label: 'LinkedIn', value: 'linkedin.com/in/chika-anya-92655323a', icon: '🔗' },
-                ].map((item, i) => (
+                ].map((item) => (
                   <div
                     key={item.label}
                     className="glass-card"
@@ -282,7 +285,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── SKILLS ── */}
       <section style={{ 
         padding: isMobile ? '3rem max(1.5rem, 4vw)' : '5rem max(3rem, 8vw)', 
         background: 'var(--surface)', 
@@ -303,7 +305,6 @@ export default function About() {
             </h2>
           </RevealCard>
 
-          {/* Category filter */}
           <RevealCard delay={0.1} style={{ marginBottom: '2.5rem' }}>
             <div style={{ 
               display: 'flex', 
@@ -340,7 +341,7 @@ export default function About() {
             gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
             gap: isMobile ? '0' : '0 4rem' 
           }}>
-            {filteredSkills.map((s, i) => (
+            {filteredSkills.map((s) => (
               <div key={s.name + activeSkillCat}>
                 <SkillBar {...s} />
               </div>
@@ -349,7 +350,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── EXPERIENCE TIMELINE ── */}
       <section style={{ 
         padding: isMobile ? '3rem max(1.5rem, 4vw)' : '6rem max(3rem, 8vw)', 
         position: 'relative', 
@@ -454,7 +454,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── ACHIEVEMENTS ── */}
       <section style={{ 
         padding: isMobile ? '3rem max(1.5rem, 4vw)' : '5rem max(3rem, 8vw)', 
         background: 'var(--surface)', 

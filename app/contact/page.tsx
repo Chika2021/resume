@@ -1,7 +1,13 @@
 'use client';
+import { Metadata } from 'next';
 import { useState, useRef, useEffect } from 'react';
 
-function RevealCard({ children, delay = 0, style = {} }) {
+export const metadata: Metadata = {
+  title: 'Contact',
+  description: 'Get in touch with Anya Chika Amaechi for full-stack development, mobile apps, or IT consulting projects.',
+};
+
+function RevealCard({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const ref = useRef(null);
   const [vis, setVis] = useState(false);
   useEffect(() => {
@@ -57,11 +63,10 @@ const CONTACT_INFO = [
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle | loading | success | error
-  const [focused, setFocused] = useState(null);
+  const [status, setStatus] = useState('idle');
+  const [focused, setFocused] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if mobile
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -71,14 +76,13 @@ export default function Contact() {
     }
   }, []);
 
-  const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
 
     try {
-      // Using EmailJS to send the form data
       const templateParams = {
         name: form.name,
         email: form.email,
@@ -114,7 +118,6 @@ export default function Contact() {
     }
   };
 
-  // Custom cursor effect - only on desktop
   useEffect(() => {
     if (typeof window === 'undefined' || window.innerWidth < 768) return;
     
@@ -128,7 +131,7 @@ export default function Contact() {
     let ringX = 0;
     let ringY = 0;
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
       
@@ -167,8 +170,6 @@ export default function Contact() {
 
   return (
     <main style={{ paddingTop: isMobile ? '4rem' : '5rem' }}>
-
-      {/* Custom Cursor Elements - Desktop only */}
       {!isMobile && (
         <>
           <div id="cursor-dot" style={{
@@ -205,7 +206,6 @@ export default function Contact() {
         }
       `}</style>
 
-      {/* ── HERO ── */}
       <section style={{ 
         padding: isMobile ? '3rem max(1.5rem, 4vw) 2rem' : '6rem max(3rem, 8vw) 3rem', 
         position: 'relative', 
@@ -217,7 +217,7 @@ export default function Contact() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2, textAlign: 'center' }}>
           <RevealCard>
             <div className="section-label" style={{ justifyContent: 'center' }}>
-              Let's Connect
+              Let&apos;s Connect
             </div>
           </RevealCard>
           <RevealCard delay={0.1}>
@@ -235,13 +235,12 @@ export default function Contact() {
               fontSize: isMobile ? '0.9rem' : '1rem'
             }}>
               Whether you have a project in mind, a job opportunity, or just want to say hello —
-              I'd love to hear from you. My inbox is always open.
+              I&apos;d love to hear from you. My inbox is always open.
             </p>
           </RevealCard>
         </div>
       </section>
 
-      {/* ── CONTACT GRID ── */}
       <section style={{ 
         padding: isMobile ? '1rem max(1.5rem, 4vw) 4rem' : '2rem max(3rem, 8vw) 6rem', 
         position: 'relative' 
@@ -255,7 +254,6 @@ export default function Contact() {
           alignItems: 'start' 
         }}>
 
-          {/* Left: info */}
           <div>
             <RevealCard>
               <h2 style={{ 
@@ -275,7 +273,7 @@ export default function Contact() {
                 marginBottom: '2rem',
                 textAlign: isMobile ? 'center' : 'left'
               }}>
-                I'm currently open to new opportunities — full-time positions, consulting engagements,
+                I&apos;m currently open to new opportunities — full-time positions, consulting engagements,
                 and freelance collaborations. Response time is typically within 24 hours.
               </p>
             </RevealCard>
@@ -324,7 +322,6 @@ export default function Contact() {
               </RevealCard>
             ))}
 
-            {/* Availability badge */}
             <RevealCard delay={0.5}>
               <div
                 className="glass-card"
@@ -368,7 +365,6 @@ export default function Contact() {
             </RevealCard>
           </div>
 
-          {/* Right: form */}
           <RevealCard delay={0.15}>
             <div
               className="glass-card"
@@ -378,7 +374,6 @@ export default function Contact() {
                 overflow: 'hidden',
               }}
             >
-              {/* Top gradient bar */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
                 background: 'linear-gradient(90deg, var(--primary), var(--accent), var(--gold))',
@@ -512,7 +507,7 @@ export default function Contact() {
                     textAlign: 'center',
                     animation: 'fadeIn 0.4s ease',
                   }}>
-                    ✓ Thank you! I'll get back to you within 24 hours.
+                    ✓ Thank you! I&apos;ll get back to you within 24 hours.
                   </div>
                 )}
                 {status === 'error' && (
@@ -538,7 +533,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ── FOOTER CTA ── */}
       <section style={{ 
         padding: isMobile ? '2.5rem max(1.5rem, 4vw)' : '4rem max(3rem, 8vw)', 
         background: 'var(--surface)', 

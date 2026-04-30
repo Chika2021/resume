@@ -1,15 +1,68 @@
 import './globals.css';
 
-export const metadata = {
-  title: 'Anya Chika Amaechi — Full-Stack Engineer & IT Consultant',
-  description: 'Senior Full-Stack Software Engineer with 9+ years of experience. Next.js, NestJS, Flutter, Spring Boot, IT Consulting.',
-  keywords: ['Full-Stack Engineer', 'Next.js', 'NestJS', 'Flutter', 'IT Consultant', 'Nigeria'],
+
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Anya Chika Amaechi — Full-Stack Engineer & IT Consultant',
+    template: '%s | Anya Chika Amaechi',
+  },
+  description: 'Senior Full-Stack Engineer with 9+ years. Next.js, NestJS, Flutter, Spring Boot, IT Consulting. Available for hire in Nigeria.',
+  keywords: ['Full-Stack Engineer Nigeria', 'NestJS Developer', 'Flutter Developer', 'Next.js Developer', 'IT Consultant Nigeria', 'Hire Software Engineer'],
+  authors: [{ name: 'Anya Chika Amaechi' }],
+  creator: 'Anya Chika Amaechi',
+  metadataBase: new URL('https://chikaanya.vercel.app'), // ← replace with your real domain
+  openGraph: {
+    type: 'website',
+    locale: 'en_NG',
+    url: 'https://chikaanya.vercel.app',
+    siteName: 'Anya Chika Amaechi Portfolio',
+    title: 'Anya Chika Amaechi — Full-Stack Engineer & IT Consultant',
+    description: 'Senior Full-Stack Engineer with 9+ years building web, mobile and enterprise systems.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Anya Chika Amaechi Portfolio' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Anya Chika Amaechi — Full-Stack Engineer',
+    description: 'Senior Full-Stack Engineer with 9+ years. Available for hire.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
+  alternates: {
+    canonical: 'https://chikaanya.vercel.app',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": "Anya Chika Amaechi",
+              "jobTitle": "Full-Stack Software Engineer",
+              "email": "amaechichika9@gmail.com",
+              "telephone": "+2349011140929",
+              "url": "https://chikaanya.vercel.app",
+              "sameAs": [
+                "https://github.com/Chika2021",
+                "https://linkedin.com/in/chika-anya-92655323a"
+              ],
+              "knowsAbout": ["Next.js", "NestJS", "Flutter", "Spring Boot", "PostgreSQL", "IT Consulting"],
+              "address": { "@type": "PostalAddress", "addressCountry": "NG" }
+            })
+          }}
+        />
         <CursorProvider />
         <Navigation />
         {children}
