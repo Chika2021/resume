@@ -37,6 +37,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://chikaanya.vercel.app',
   },
+
+  // Add this 👇
+  verification: {
+    google: 'gDgM9MNmFLs1sJWQBxJW_pBtvI2Qpl2oO6vCk5E1Qm0',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
