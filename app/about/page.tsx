@@ -194,7 +194,7 @@ export default function About() {
                 textAlign: isMobile ? 'center' : 'left'
               }}>
                 <p style={{ marginBottom: '1.2rem' }}>
-                  I&apos;m a <strong style={{ color: 'var(--text)' }}>Senior Full-Stack Software Engineer</strong> and
+                  I&apos;m a <strong style={{ color: 'var(--text)' }}>Senior Software Engineer</strong> and
                   IT Consultant with over 9 years of professional experience designing and delivering robust
                   digital solutions for diverse industries across Nigeria and beyond.
                 </p>

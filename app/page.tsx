@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 const ROLES = [
-  'Full-Stack Engineer',
+  'Software Engineer',
   'Mobile Developer',
   'IT Consultant',
   'Graphic Designer',
@@ -496,7 +496,7 @@ export default function Home() {
                   marginRight: isMobile ? 'auto' : '0',
                 }}
               >
-                Senior Full-Stack Engineer with <strong style={{ color: 'var(--text)' }}>9+ years</strong> crafting
+                Senior Software Engineer with <strong style={{ color: 'var(--text)' }}>9+ years</strong> crafting
                 mission-critical applications. I architect resilient digital products—from pixel-perfect UIs
                 to scalable cloud infrastructure.
               </p>
@@ -663,8 +663,8 @@ export default function Home() {
             <RevealCard delay={0.2}>
               <div style={{ color: 'var(--text-muted)', lineHeight: 1.9, fontSize: '0.97rem' }}>
                 <p style={{ marginBottom: '1.2rem' }}>
-                  I&apos;m a <strong style={{ color: 'var(--text)' }}>Senior Full-Stack Software Engineer</strong> and
-                  IT Consultant with over 9 years of professional experience designing and delivering robust
+                  I&apos;m a <strong style={{ color: 'var(--text)' }}>Senior Software Engineer</strong> and
+                  <strong>IT Consultant</strong> with over 9 years of professional experience designing and delivering robust
                   digital solutions for diverse industries across Nigeria and beyond.
                 </p>
                 <p style={{ marginBottom: '1.2rem' }}>
